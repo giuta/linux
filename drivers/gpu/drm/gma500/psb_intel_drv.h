@@ -265,7 +265,7 @@ extern int intelfb_remove(struct drm_device *dev,
 			  struct drm_framebuffer *fb);
 extern struct drm_framebuffer *psb_intel_framebuffer_create(struct drm_device
 							*dev, struct
-							drm_mode_fb_cmd
+							drm_mode_fb_cmd2
 							*mode_cmd,
 							void *mm_private);
 extern bool psb_intel_lvds_mode_fixup(struct drm_encoder *encoder,

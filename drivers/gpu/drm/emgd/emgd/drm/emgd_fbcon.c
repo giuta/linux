@@ -36,6 +36,7 @@
 #include <drmP.h>
 #include <drm_crtc_helper.h>
 #include <linux/vga_switcheroo.h>
+#include <linux/export.h>
 
 
 #include "user_config.h"
@@ -57,7 +58,7 @@ extern emgd_drm_config_t config_drm;
  */
 extern int emgd_framebuffer_init(struct drm_device *dev,
 			emgd_framebuffer_t *emgd_fb,
-			struct drm_mode_fb_cmd *mode_cmd,
+			struct drm_mode_fb_cmd2 *mode_cmd,
 			unsigned long handle);
 
 
@@ -124,7 +125,7 @@ static void fill_fix(emgd_fbdev_t *emgd_fbdev, struct fb_info *info)
 	info->fix.ywrapstep   = 0;
 	info->fix.accel       = FB_ACCEL_NONE;
 	info->fix.type_aux    = 0;
-	info->fix.line_length = fb->pitch;
+	info->fix.line_length = fb->pitches[0];
 }
 
 
@@ -246,7 +247,7 @@ static int alloc_initial_fb(emgd_fbdev_t *emgd_fbdev)
 	igd_context_t          *context;
 	int                     ret;
 	unsigned long           size;
-	struct drm_mode_fb_cmd  mode_cmd;
+	struct drm_mode_fb_cmd2  mode_cmd;
 
 	EMGD_TRACE_ENTER;
 
@@ -291,12 +292,14 @@ static int alloc_initial_fb(emgd_fbdev_t *emgd_fbdev)
 
 
 	/* Initialize emgd_framebuffer_t */
-	mode_cmd.handle = EMGD_INITIAL_FRAMEBUFFER;
-	mode_cmd.pitch  = priv->initfb_info.screen_pitch;
+	mode_cmd.handles[0] = EMGD_INITIAL_FRAMEBUFFER;
+	mode_cmd.pitches[0]  = priv->initfb_info.screen_pitch;
 	mode_cmd.width  = priv->initfb_info.width;
 	mode_cmd.height = priv->initfb_info.height;
-	mode_cmd.bpp    = IGD_PF_BPP(priv->initfb_info.pixel_format);
-	mode_cmd.depth  = mode_cmd.bpp;  /* Ok for 32bpp, may not work for 16bpp */
+	mode_cmd.pixel_format = drm_mode_legacy_fb_format(
+					IGD_PF_BPP(priv->initfb_info.pixel_format),
+					IGD_PF_BPP(priv->initfb_info.pixel_format)  /* Ok for 32bpp, may not work for 16bpp */
+					);
 
 	ret = emgd_framebuffer_init(dev, emgd_fbdev->emgd_fb, &mode_cmd,
 			EMGD_INITIAL_FRAMEBUFFER);

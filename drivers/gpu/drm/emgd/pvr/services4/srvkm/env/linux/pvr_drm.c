@@ -238,6 +238,16 @@ struct drm_ioctl_desc sPVRDrmIoctls[] = {
 
 static IMG_INT pvr_max_ioctl = DRM_ARRAY_SIZE(sPVRDrmIoctls);
 
+static const struct file_operations pvr_driver_fops = {
+	.owner = THIS_MODULE,
+	.open = drm_open,
+	.release = drm_release,
+	.ioctl = drm_ioctl,
+	.mmap = PVRMMap,
+	.poll = drm_poll,
+	.fasync = drm_fasync,
+};
+
 static struct drm_driver sPVRDrmDriver =
 {
 	.driver_features = 0,
@@ -251,16 +261,7 @@ static struct drm_driver sPVRDrmDriver =
 	.get_map_ofs = drm_core_get_map_ofs,
 	.get_reg_ofs = drm_core_get_reg_ofs,
 	.ioctls = sPVRDrmIoctls,
-	.fops =
-	{
-		.owner = THIS_MODULE,
-		.open = drm_open,
-		.release = drm_release,
-		.ioctl = drm_ioctl,
-		.mmap = PVRMMap,
-		.poll = drm_poll,
-		.fasync = drm_fasync,
-	},
+	.fops = &pvr_driver_fops,
 	.pci_driver =
 	{
 		.name = PVR_DRM_NAME,

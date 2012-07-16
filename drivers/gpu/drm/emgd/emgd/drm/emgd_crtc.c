@@ -343,11 +343,11 @@ static int emgd_crtc_mode_set_base(struct drm_crtc *crtc, int x, int y,
 
 	plane_fb_info->width          = fb->width;
 	plane_fb_info->height         = fb->height;
-	plane_fb_info->screen_pitch   = fb->pitch;
+	plane_fb_info->screen_pitch   = fb->pitches[0];
 	plane_fb_info->flags          = 0;
 	plane_fb_info->allocated      = 1;
 	plane_fb_info->fb_base_offset = emgd_fb->gtt_offset;
-	plane_fb_info->visible_offset = (y * fb->pitch) +
+	plane_fb_info->visible_offset = (y * fb->pitches[0]) +
 		(x * (fb->bits_per_pixel / 8));
 
 
@@ -828,7 +828,7 @@ void emgd_flip_worker(struct work_struct *w)
 		/* Rendering complete; program the plane registers */
 		igd_surface.flags        = IGD_SURFACE_DISPLAY;
 		igd_surface.offset       = crtc->newfb->gtt_offset;
-		igd_surface.pitch        = crtc->newfb->base.pitch;
+		igd_surface.pitch        = crtc->newfb->base.pitches[0];
 		igd_surface.width        = crtc->newfb->base.width;
 		igd_surface.height       = crtc->newfb->base.height;
 		igd_surface.pixel_format = IGD_PF_ARGB32;

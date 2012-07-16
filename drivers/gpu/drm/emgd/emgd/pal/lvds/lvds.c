@@ -31,6 +31,7 @@
  *-----------------------------------------------------------------------------
  */
 #include <linux/kernel.h>
+#include <linux/bug.h>
 
 #include <config.h>
 #include <igd_pd.h>

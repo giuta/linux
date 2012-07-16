@@ -38,6 +38,8 @@
 #include <drm/drm_crtc_helper.h>
 #include <linux/version.h>
 #include <linux/device.h>
+#include <linux/export.h>
+#include <linux/module.h>
 #include <drm/drm_pciids.h>
 #include <intelpci.h>
 #include "drm_emgd_private.h"
@@ -163,6 +165,20 @@ MODULE_PARM_DESC(debug_bc_ts, "Debug: Texture Stream");
 module_param_named(debug_bc_ts, emgd_debug_flag.hal.buf_class, short, 0600);
 #endif
 
+static const struct file_operations emgd_driver_fops = {
+	.owner   = THIS_MODULE,
+	.open    = drm_open,
+	.release = drm_release,
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,32)
+	.unlocked_ioctl   = drm_ioctl,
+#else
+	.ioctl   = drm_ioctl,
+#endif
+	.mmap    = emgd_mmap,
+	.poll    = drm_poll,
+	.fasync  = drm_fasync,
+	.read    = drm_read,
+};
 
 static struct drm_driver driver;  /* TODO: what? */
 
@@ -2377,20 +2393,7 @@ static struct drm_driver driver = {
 	.get_reg_ofs        = drm_core_get_reg_ofs,
 #endif
 	.ioctls             = emgd_ioctl,
-	.fops = {
-		.owner   = THIS_MODULE,
-		.open    = drm_open,
-		.release = drm_release,
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,32)
-		.unlocked_ioctl   = drm_ioctl,
-#else
-		.ioctl   = drm_ioctl,
-#endif
-		.mmap    = emgd_mmap,
-		.poll    = drm_poll,
-		.fasync  = drm_fasync,
-		.read    = drm_read,
-	},
+	.fops = &emgd_driver_fops,
 #if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,38)
 	.pci_driver          = EMGD_PCI_DRIVER,
 #endif

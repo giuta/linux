@@ -24,7 +24,9 @@
 #include <asm/io.h>
 #include <asm/page.h>
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,22))
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 4, 0)
 #include <asm/system.h>
+#endif
 #endif
 #include <linux/mm.h>
 #include <linux/slab.h>

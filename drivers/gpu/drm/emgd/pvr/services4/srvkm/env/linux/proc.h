@@ -23,7 +23,10 @@
 #ifndef __SERVICES_PROC_H__
 #define __SERVICES_PROC_H__
 
+#include <linux/version.h>
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 4, 0)
 #include <asm/system.h>
+#endif
 #include <linux/proc_fs.h>
 #include <linux/seq_file.h>
 

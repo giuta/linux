@@ -110,12 +110,12 @@ static void emgd_fbdev_destroy(drm_emgd_priv_t *priv);
  */
 int emgd_framebuffer_init(struct drm_device *dev,
 			emgd_framebuffer_t *emgd_fb,
-			struct drm_mode_fb_cmd *mode_cmd,
+			struct drm_mode_fb_cmd2 *mode_cmd,
 			unsigned long offset);
 static struct drm_framebuffer *emgd_user_framebuffer_create(
 								struct drm_device *dev,
 								struct drm_file *filp,
-								struct drm_mode_fb_cmd *r);
+								struct drm_mode_fb_cmd2 *r);
 RETURN_PROBE_TYPE  emgd_fb_probe(struct drm_device *dev);
 static int emgd_fb_panic(struct notifier_block *n,
 			unsigned long res,
@@ -815,7 +815,7 @@ EXPORT_SYMBOL(emgd_fb_probe);
 static struct drm_framebuffer *emgd_user_framebuffer_create(
 								struct drm_device *dev,
 								struct drm_file *filp,
-								struct drm_mode_fb_cmd *mode_cmd)
+								struct drm_mode_fb_cmd2 *mode_cmd)
 {
 	emgd_framebuffer_t *emgd_fb;
 	int                 ret;
@@ -830,7 +830,7 @@ static struct drm_framebuffer *emgd_user_framebuffer_create(
 
 	/* Create a framebuffer instance */
 	ret = emgd_framebuffer_init(dev, emgd_fb, mode_cmd,
-			(unsigned long)mode_cmd->handle);
+			(unsigned long)mode_cmd->handles[0]);
 	if (ret) {
 		EMGD_ERROR("Failed to create framebuffer instance.");
 		/* TODO: Free the allocation at mode_cmd->handle */
@@ -869,7 +869,7 @@ static struct drm_framebuffer *emgd_user_framebuffer_create(
  */
 int emgd_framebuffer_init(struct drm_device *dev,
 		emgd_framebuffer_t *emgd_fb,
-		struct drm_mode_fb_cmd *mode_cmd,
+		struct drm_mode_fb_cmd2 *mode_cmd,
 		unsigned long handle)
 {
 	drm_emgd_priv_t *dev_priv = NULL;
@@ -1165,7 +1165,7 @@ static int emgd_fb_create(emgd_fbdev_t *emgd_fbdev,
 	drm_emgd_priv_t        *priv    = emgd_fbdev->priv;
 	struct drm_device      *dev     = priv->ddev;
 	struct fb_info         *info    = NULL;
-	struct drm_mode_fb_cmd  mode_cmd;
+	struct drm_mode_fb_cmd2  mode_cmd;
 	struct drm_framebuffer *fb       = NULL;
 	igd_context_t          *context  = NULL;
 	int                     ret;
