@@ -64,11 +64,11 @@ include/generated
 arch/*/include/generated
 
 # stgit generated dirs
-patches-*
+#patches-*
 
 # quilt's files
-patches
-series
+#patches
+#series
 
 # cscope files
 cscope.*
@@ -91,3 +91,4 @@ extra_certificates
 signing_key.priv
 signing_key.x509
 x509.genkey
+/meta
